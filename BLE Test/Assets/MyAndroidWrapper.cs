@@ -339,6 +339,7 @@ public class MyAndroidWrapper : MonoBehaviour
         Debug.Log("It's Connected!");
 
         MyWoawoaAdapter.ins.StartGyro3DMode();
+        //MyWoawoaAdapter.ins.StartWalk();
         // StopAllCoroutines();
         //StartCoroutine(WaitAndSetting());
         //Debug.Log("Coroutine Started!!");

@@ -15,7 +15,10 @@ public class TestLauncher : MonoBehaviour
         EndThrow,
         Wait,
         Catch,
-        Reload
+        Reload,
+        Nibble,
+        Bite,
+        Fighting
     }
 
     private bool isCatch = false;
@@ -65,6 +68,10 @@ public class TestLauncher : MonoBehaviour
     public Animator playerAnimator;
     public Animator fishingPoleAnimator;
 
+    public FishingMinigame fishingMiniGame;
+
+    [Header("Nibble")]
+    public float NIBBLE_LIMIT_TIME = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -80,12 +87,15 @@ public class TestLauncher : MonoBehaviour
         PlayerAnimationEvent.ThrowEvent += OnThrow;
         PlayerAnimationEvent.ReloadEndEvent += OnReloadEnd;
 
+        FishingMinigame.FishingMinigameWin += Catch;
+        FishingMinigame.FishingMinigameLose += Miss;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 angularVelocity = new Vector3((float)gyroX, (float)gyroX, (float)gyroZ);
+        Vector3 angularVelocity = new Vector3((float)gyroX, (float)gyroY, (float)gyroZ);
         power = (float)gyroZ;
 
 
@@ -97,7 +107,7 @@ public class TestLauncher : MonoBehaviour
         //}
 
 
-        if (!isStartFishing && gyroZ < 60 && state == "1") //Ready
+        if (!isStartFishing && Mathf.Abs((float)gyroZ) < 60 && (state == "1" || state == "2")) //Ready
         {
             stickState = StickState.Ready;
 
@@ -107,10 +117,8 @@ public class TestLauncher : MonoBehaviour
             totalPower = 0;
 
             fishingFloat.transform.position = floatPivot.position;
-
-            StopCoroutine(waiting);
         }
-        else if (stickState == StickState.Ready && power > 90f) //BeginThrow
+        else if (stickState == StickState.Ready && gyroZ < -60) //BeginThrow
         {
             isStartFishing = true;
             stickState = StickState.Cast;
@@ -122,9 +130,28 @@ public class TestLauncher : MonoBehaviour
             }
         }
 
-        max = max < (power) ? power : max;
-        maxValue.text = ((int)max).ToString();
+        if(stickState == StickState.Nibble)
+        {
+            if(angularVelocity.magnitude > 100f)
+            {
+                stickState = StickState.Reload;
+                SetAnimation(stickState);
+            }
+        }
 
+        if(stickState == StickState.Bite)
+        {
+            if(gyroY < -100)
+            {
+                stickState = StickState.Fighting;
+                StartCoroutine(Fighting());
+            }
+        }
+
+        max = max < (power) ? power : max;
+        maxValue.text = state;
+        throwTime.text = angularVelocity.magnitude.ToString();
+        motionValue.text = $"{gyroX}\n{gyroY}\n{gyroZ}";
         currentGameStateText.text = stickState.ToString();
     }
 
@@ -144,6 +171,7 @@ public class TestLauncher : MonoBehaviour
             yield return updateTime;
         }
 
+        totalPower = Mathf.Abs(totalPower);
         totalPower = Mathf.Sqrt(totalPower /= elapsedTime);
 
         fishingFloat.GetComponent<Rigidbody>().useGravity = true;
@@ -153,6 +181,7 @@ public class TestLauncher : MonoBehaviour
 
         sumOfPower.text = totalPower.ToString();
         throwTime.text = elapsedTime.ToString();
+
         startThrow = null;
     }
 
@@ -164,41 +193,68 @@ public class TestLauncher : MonoBehaviour
         fishingFloat.gameObject.SetActive(true);
 
         //isCatch = true;
-        while(true)
+        while(stickState == StickState.Wait)
         {
-            if(state == "1" && isCatch == false)
+            float randomValue = Random.value * 100f;
+            if(randomValue > 30f)
+            {
+                stickState = StickState.Nibble;
+            }
+
+            if(state == "1")
             {
                 stickState = StickState.Reload;
                 SetAnimation(stickState);
                 break;
             }
-            if(isCatch)
+            
+            if(stickState == StickState.Nibble)
             {
-                draw = StartCoroutine(Draw());
-                break;
+                StartCoroutine(NibbleTimer());
             }
+
             yield return null;
         }
     }
 
-    Coroutine draw;
-    private IEnumerator Draw()
+
+    private IEnumerator NibbleTimer()
     {
-        stickState = StickState.Catch;
-        currentGameStateText.text = stickState.ToString();
+        int nibbleCount = Random.Range(0, 4);
 
-        ActionType actionType = (ActionType)Random.Range(0, 1);
+        for(int i = 0; i < nibbleCount; i++)
+        {
+            SetAnimation(stickState);
+            float randomDelay = Random.Range(0.5f, 2f);
 
-        gaugeController.StartGaugeControl(actionType);
+            yield return null;
+            yield return new WaitForSeconds(randomDelay + playerAnimator.GetCurrentAnimatorStateInfo(0).length);
+        }
 
+        stickState = StickState.Bite;
+        SetAnimation(stickState);
+        StartCoroutine(Bite());
         yield return null;
     }
 
-    public void OnHit()
+    private IEnumerator Bite()
     {
-        isCatch = true;
-    }
+        yield return new WaitForSeconds(playerAnimator.GetCurrentAnimatorStateInfo(0).length);
 
+        if (stickState == StickState.Bite)
+        {
+            stickState = StickState.Reload;
+            SetAnimation(stickState);
+        }
+    }
+    private IEnumerator Fighting()
+    {
+        MyWoawoaAdapter.ins.StopGyro();
+        MyWoawoaAdapter.ins.ClearWalkData();
+        MyWoawoaAdapter.ins.StartWalk();
+        fishingMiniGame.MiniGameStart();
+        yield return null;
+    }
 
     public void GetAccValue(double x, double y, double z)
     {
@@ -253,6 +309,11 @@ public class TestLauncher : MonoBehaviour
         isThrow = true;
     }
 
+    public void OnNibbleBegin()
+    {
+        stickState = StickState.Nibble;   
+    }
+
     public void OnReloadEnd()
     {
         isStartFishing = false;
@@ -260,6 +321,18 @@ public class TestLauncher : MonoBehaviour
         waiting = null;
 
         stickState = StickState.Ready;
+        SetAnimation(stickState);
+    }
+
+    public void Catch()
+    {
+        stickState = StickState.Catch;
+        SetAnimation(stickState);
+    }
+
+    public void Miss()
+    {
+        stickState = StickState.Reload;
         SetAnimation(stickState);
     }
 }

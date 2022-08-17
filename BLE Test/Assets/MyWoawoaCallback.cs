@@ -305,6 +305,7 @@ public class MyWoawoaCallback : MonoBehaviour
                 }
             case 'N':
                 {
+                    Debug.Log("======================================Walk=================================");
                     Debug.Log("A " + str);
                     myAndroidWrapper.OnWalk(int.Parse(str.Substring(1)));
                     break;

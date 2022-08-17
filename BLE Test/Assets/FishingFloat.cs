@@ -5,6 +5,9 @@ using TMPro;
 
 public class FishingFloat : MonoBehaviour
 {
+    public delegate void NibbleEvent();
+    public NibbleEvent NibbleBegin;
+
     public TestLauncher fishingSystem;
     public Transform linePivot;
 
@@ -28,11 +31,12 @@ public class FishingFloat : MonoBehaviour
         distanceUI.text = Vector3.Distance(positions[0], Vector3.zero).ToString("0.0");
     }
 
+    //나중에 Bite로 이름 바꿀것
     public void Hit()
     {
         GetComponent<SphereCollider>().enabled = false;
 
-        fishingSystem.OnHit();
+        NibbleBegin?.Invoke();   
     }
 
     private void OnTriggerEnter(Collider other)
