@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class TestLauncher : MonoBehaviour
 {
     public enum StickState
     {
+        Cast,
         Ready,
         BeginThrow,
         OnThrow,
         EndThrow,
         Wait,
-        Catch
+        Catch,
+        Reload
     }
 
     private bool isCatch = false;
@@ -50,12 +53,18 @@ public class TestLauncher : MonoBehaviour
     private float max = -1;
     float power = 0f;
 
+    private bool isStartFishing = false;
+
+    private bool isThrow = false;
     private float totalPower = 0f;
 
     public GaugeController gaugeController;
-    public FishingFloat fishingFloat;
+    public GameObject fishingFloat;
+    public Transform floatPivot;
 
-    public Animator animator;
+    public Animator playerAnimator;
+    public Animator fishingPoleAnimator;
+
 
     // Start is called before the first frame update
     void Start()
@@ -65,7 +74,11 @@ public class TestLauncher : MonoBehaviour
         MyWoawoaAdapter.OnGyroReaded += GetGyroValue;
         MyWoawoaAdapter.OnMotionReaded += GetMotionValue;
         MyWoawoaAdapter.OnGrabReaded += GetGrab;
-        MyWoawoaAdapter.OnWalkReaded += GetWalkCount; 
+        MyWoawoaAdapter.OnWalkReaded += GetWalkCount;
+
+        PlayerAnimationEvent.CastEndEvent += OnCastEnd;
+        PlayerAnimationEvent.ThrowEvent += OnThrow;
+        PlayerAnimationEvent.ReloadEndEvent += OnReloadEnd;
 
     }
 
@@ -75,26 +88,38 @@ public class TestLauncher : MonoBehaviour
         Vector3 angularVelocity = new Vector3((float)gyroX, (float)gyroX, (float)gyroZ);
         power = (float)gyroZ;
 
-        if (gyroZ < 60 && state == "1") //Ready
+
+        //Debug.Log("==========================================                  GYRO Z : " + gyroZ + "             ======================================================");
+        //if (Input.GetMouseButtonDown(0)) SetAnimation(StickState.Ready);
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    SetAnimation(StickState.Cast);
+        //}
+
+
+        if (!isStartFishing && gyroZ < 60 && state == "1") //Ready
         {
             stickState = StickState.Ready;
 
-            animator.Play("Fishing Idle");
+            SetAnimation(stickState);
 
             max = 0;
             totalPower = 0;
+
+            fishingFloat.transform.position = floatPivot.position;
 
             StopCoroutine(waiting);
         }
         else if (stickState == StickState.Ready && power > 90f) //BeginThrow
         {
-            stickState = StickState.BeginThrow;
+            isStartFishing = true;
+            stickState = StickState.Cast;
+            SetAnimation(stickState);
 
             if (startThrow == null)
             {
                 startThrow = StartCoroutine(StartThrow());
             }
-
         }
 
         max = max < (power) ? power : max;
@@ -106,34 +131,36 @@ public class TestLauncher : MonoBehaviour
     Coroutine startThrow;
     private IEnumerator StartThrow()
     {
-        stickState = StickState.OnThrow;
+        isThrow = false;
         WaitForFixedUpdate updateTime = new WaitForFixedUpdate();
-        float elpasedTime = 0f;
 
-        animator.Play("Fishing Cast");
-
-        while(state != "0")
+        totalPower = 0f;
+        float elapsedTime = 0f;
+        while(state != "0" && !isThrow)
         {
-            elpasedTime += Time.fixedDeltaTime;
+            elapsedTime += Time.fixedDeltaTime;
             totalPower += (int)power;
 
             yield return updateTime;
         }
 
-        sumOfPower.text = totalPower.ToString();
-        totalPower /= elpasedTime;
-        motionValue.text = totalPower.ToString();
-        throwTime.text = elpasedTime.ToString();
-        stickState = StickState.EndThrow;
-        startThrow = null;
+        totalPower = Mathf.Sqrt(totalPower /= elapsedTime);
 
-        waiting = StartCoroutine(StartWaiting());
+        fishingFloat.GetComponent<Rigidbody>().useGravity = true;
+        fishingFloat.GetComponent<Rigidbody>().isKinematic = false;
+
+        fishingFloat.GetComponent<Rigidbody>().AddForce(totalPower * Vector3.forward * 50f);
+
+        sumOfPower.text = totalPower.ToString();
+        throwTime.text = elapsedTime.ToString();
+        startThrow = null;
     }
 
     Coroutine waiting;
     private IEnumerator StartWaiting()
     {
         stickState = StickState.Wait;
+        SetAnimation(stickState);
         fishingFloat.gameObject.SetActive(true);
 
         //isCatch = true;
@@ -141,8 +168,8 @@ public class TestLauncher : MonoBehaviour
         {
             if(state == "1" && isCatch == false)
             {
-                stickState = StickState.Ready;
-                waiting = null;
+                stickState = StickState.Reload;
+                SetAnimation(stickState);
                 break;
             }
             if(isCatch)
@@ -205,5 +232,34 @@ public class TestLauncher : MonoBehaviour
     public void GetGrab(float power)
     {
         gaugeController.GetGrabValue(power);
+    }
+
+    public void SetAnimation(StickState state)
+    {
+        string animationState = state.ToString();
+
+        playerAnimator.Play(animationState);
+        fishingPoleAnimator.Play(animationState);
+    }
+
+    public void OnCastEnd()
+    {
+
+        waiting = StartCoroutine(StartWaiting());
+    }
+
+    public void OnThrow()
+    {
+        isThrow = true;
+    }
+
+    public void OnReloadEnd()
+    {
+        isStartFishing = false;
+        fishingFloat.transform.position = floatPivot.position;
+        waiting = null;
+
+        stickState = StickState.Ready;
+        SetAnimation(stickState);
     }
 }
