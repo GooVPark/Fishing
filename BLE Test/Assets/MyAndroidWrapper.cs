@@ -119,9 +119,9 @@ public class MyAndroidWrapper : MonoBehaviour
     public void Init()
     {
         Debug.Log("Started!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        OnGrabReaded = null;
+        //OnGrabReaded = null;
         OnMotionReaded = null;
-        OnWalkReaded = null;
+        //OnWalkReaded = null;
 
         asdf = 0;
         logs = new List<string>();
@@ -276,6 +276,8 @@ public class MyAndroidWrapper : MonoBehaviour
         SendData("SS");
     }
 
+    
+
     public void StartGyro()
     {
         myWoawoaCallback.SetGyroscopeType("M2");
@@ -339,7 +341,8 @@ public class MyAndroidWrapper : MonoBehaviour
         Debug.Log("It's Connected!");
 
         MyWoawoaAdapter.ins.StartGyro3DMode();
-        //MyWoawoaAdapter.ins.StartWalk();
+        MyWoawoaAdapter.ins.StartWalk();
+        MyWoawoaAdapter.ins.ClearWalkData();
         // StopAllCoroutines();
         //StartCoroutine(WaitAndSetting());
         //Debug.Log("Coroutine Started!!");

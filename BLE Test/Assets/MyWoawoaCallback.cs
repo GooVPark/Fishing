@@ -97,7 +97,7 @@ public class MyWoawoaCallback : MonoBehaviour
 
     public void DataProcess(string str)
     {
-        Debug.Log("DataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcess");
+        //Debug.Log("DataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcessDataProcess");
         willHandleDatas.Add(str);
     }
 
@@ -113,11 +113,11 @@ public class MyWoawoaCallback : MonoBehaviour
         switch (str[0])
         {
             case 'L':
-                Debug.Log("악력 측정 중");
+               // Debug.Log("악력 측정 중");
                 //악력크기 값
                 if (str.Contains("L["))
                 {
-                    Debug.Log("================ Value: L ================");
+                //    Debug.Log("================ Value: L ================");
                     //                    string[] frontSplit = str.Split("L\\[");
                     //                    string[] backSplit = frontSplit[1].Split(seperatorBack, StringSplitOptions.None);
                     //                    if (grabPowerCallback != null)
@@ -125,7 +125,7 @@ public class MyWoawoaCallback : MonoBehaviour
                 }
                 else if (str.Contains("LI["))
                 {
-                    Debug.Log("================ Value: LI ================");
+             //       Debug.Log("================ Value: LI ================");
                     string[] frontSplit = str.Split(seperatorLIFront, StringSplitOptions.None);
                     string[] backSplit = frontSplit[1].Split(']');
                     loadCellInitVal = float.Parse(backSplit[0]);
@@ -135,7 +135,7 @@ public class MyWoawoaCallback : MonoBehaviour
                 }
                 else if (str.Contains("LM["))
                 {
-                    Debug.Log("================ Value: LM ================");
+             //       Debug.Log("================ Value: LM ================");
                     string[] frontSplit = str.Split(seperatorLMFront, StringSplitOptions.None);
                     string[] backSplit = frontSplit[1].Split(']');
                     string[] array1 = backSplit[0].Split(',');
@@ -156,7 +156,7 @@ public class MyWoawoaCallback : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("======================= Grab Raw Data =======================");
+              //      Debug.Log("======================= Grab Raw Data =======================");
                     float low = 0.0f;
                     float high = 0.0f;
 
@@ -199,7 +199,7 @@ public class MyWoawoaCallback : MonoBehaviour
 
             case 'A':
                 {
-                    Debug.Log("=======================Acc Activated=======================");
+               //     Debug.Log("=======================Acc Activated=======================");
                     string[] array = str.Split(',');
                     try
                     {
@@ -211,7 +211,7 @@ public class MyWoawoaCallback : MonoBehaviour
                         this.acc_z = lsb_to_mps2(z, 2.0, 16);
 
                         string d = array[3].Substring(0, 1);
-                        Debug.Log(d);
+                     //   Debug.Log(d);
 
 
 
@@ -234,7 +234,7 @@ public class MyWoawoaCallback : MonoBehaviour
             case 'G':
                 {
                     //자이로
-                    Debug.Log("G " + str);
+                    //Debug.Log("G " + str);
                     string[] array = str.Split(',');
                     int parseStart = 2;
                     int state = 0;

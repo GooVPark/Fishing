@@ -18,7 +18,8 @@ public class TestLauncher : MonoBehaviour
         Reload,
         Nibble,
         Bite,
-        Fighting
+        Fighting,
+        Final
     }
 
     private bool isCatch = false;
@@ -70,8 +71,12 @@ public class TestLauncher : MonoBehaviour
 
     public FishingMinigame fishingMiniGame;
 
-    [Header("Nibble")]
-    public float NIBBLE_LIMIT_TIME = 0;
+    public float finalLimitTime;
+    public float grabTimeLimit;
+    public float grabPower;
+
+    public Image finalStrugglingUI;
+    public Image finalStruggleTimerUI;
 
     // Start is called before the first frame update
     void Start()
@@ -87,7 +92,7 @@ public class TestLauncher : MonoBehaviour
         PlayerAnimationEvent.ThrowEvent += OnThrow;
         PlayerAnimationEvent.ReloadEndEvent += OnReloadEnd;
 
-        FishingMinigame.FishingMinigameWin += Catch;
+        FishingMinigame.FishingMinigameWin += Final;
         FishingMinigame.FishingMinigameLose += Miss;
         
     }
@@ -144,6 +149,7 @@ public class TestLauncher : MonoBehaviour
             if(gyroY < -100)
             {
                 stickState = StickState.Fighting;
+                SetAnimation(stickState);
                 StartCoroutine(Fighting());
             }
         }
@@ -227,6 +233,9 @@ public class TestLauncher : MonoBehaviour
             SetAnimation(stickState);
             float randomDelay = Random.Range(0.5f, 2f);
 
+            MyWoawoaAdapter.ins.SetVibrationPower(10);
+            MyWoawoaAdapter.ins.StartVibration();
+
             yield return null;
             yield return new WaitForSeconds(randomDelay + playerAnimator.GetCurrentAnimatorStateInfo(0).length);
         }
@@ -250,10 +259,46 @@ public class TestLauncher : MonoBehaviour
     private IEnumerator Fighting()
     {
         MyWoawoaAdapter.ins.StopGyro();
-        MyWoawoaAdapter.ins.ClearWalkData();
+        yield return null;
         MyWoawoaAdapter.ins.StartWalk();
+        yield return null;
         fishingMiniGame.MiniGameStart();
         yield return null;
+    }
+
+    public void Final()
+    {
+        finalStrugglingUI.gameObject.SetActive(true);
+        StartCoroutine(FinalCoroutine());
+    }
+
+    private IEnumerator FinalCoroutine()
+    {
+        stickState = StickState.Final;
+        SetAnimation(stickState);
+
+        float elapsedTime = 0f;
+        float grabTime = 0f;
+
+        while(elapsedTime < finalLimitTime)
+        {
+            if(grabPower < -4.5)
+            {
+                grabTime += Time.deltaTime;
+
+                finalStrugglingUI.fillAmount = grabTime / grabTimeLimit;
+            }
+
+            if(grabTime > grabTimeLimit)
+            {
+                Catch();
+                finalStrugglingUI.gameObject.SetActive(false);
+                break;
+            }
+            elapsedTime += Time.deltaTime;
+            finalStruggleTimerUI.fillAmount = (finalLimitTime - elapsedTime) / finalLimitTime;
+            yield return null;
+        }
     }
 
     public void GetAccValue(double x, double y, double z)
@@ -288,6 +333,7 @@ public class TestLauncher : MonoBehaviour
     public void GetGrab(float power)
     {
         gaugeController.GetGrabValue(power);
+        grabPower = power;
     }
 
     public void SetAnimation(StickState state)
@@ -326,13 +372,17 @@ public class TestLauncher : MonoBehaviour
 
     public void Catch()
     {
+        MyWoawoaAdapter.ins.StartGyro3DMode();
+        finalStrugglingUI.gameObject.SetActive(false);
         stickState = StickState.Catch;
         SetAnimation(stickState);
     }
 
     public void Miss()
     {
+        MyWoawoaAdapter.ins.StartGyro3DMode();
+        finalStrugglingUI.gameObject.SetActive(false);
         stickState = StickState.Reload;
-        SetAnimation(stickState);
+        SetAnimation(stickState);       
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class FishingMinigame : MonoBehaviour
 {
@@ -34,11 +35,12 @@ public class FishingMinigame : MonoBehaviour
     [Header("Hook Setting")]
     [SerializeField] private Transform hook;
     [SerializeField] private float hookSize = 0.18f;
-    [SerializeField] private float hookSpeed = 0.1f;
+    [SerializeField] private float hookSpeed = 0.001f;
     [SerializeField] private float hookGravity = 0.05f;
     [SerializeField] private float hookPower;
 
     [SerializeField] private float shakeMax = 100f;
+    [SerializeField] private float shakeDecay = 3f;
 
     private float hookPosition;
     private float hookPullVelocity;
@@ -55,13 +57,17 @@ public class FishingMinigame : MonoBehaviour
     private float grabValue;
     private float shakeCount;
 
+    [SerializeField] private float grabTime;
+    [SerializeField] private float grabLimit;
+
+    [SerializeField] private Text minigameElement;
     public GameObject miniGameUI;
     private bool isStart = false;
 
+    private float shakeCountEq;
+
     private void Awake()
     {
-        MyWoawoaAdapter.OnGrabReaded += GetGrabValue;
-        MyWoawoaAdapter.OnWalkReaded += GetShakeCount;
         
     }
     private void FixedUpdate()
@@ -77,12 +83,18 @@ public class FishingMinigame : MonoBehaviour
     public void MiniGameStart()
     {
         catchProgress = 0.3f;
+
+        shakeReduce = shakeCount;
+
+        MyWoawoaAdapter.OnGrabReaded += GetGrabValue;
+        MyWoawoaAdapter.OnWalkReaded += GetShakeCount;
         miniGameUI.SetActive(true);
         isStart = true;
     }
 
     public void MiniGameEnd()
     {
+        shakeReduce = 0;
         miniGameUI.SetActive(false);
         isStart = false;
     }
@@ -98,15 +110,15 @@ public class FishingMinigame : MonoBehaviour
                 MiniGameEnd();
             }
         }
-        else
-        {
-            catchProgress -= progressBarDecay * Time.deltaTime;
-            if(catchProgress <= 0)
-            {
-                FishingMinigameLose?.Invoke();
-                MiniGameEnd();
-            }
-        }
+        //else
+        //{
+        //    catchProgress -= progressBarDecay * Time.deltaTime;
+        //    if (catchProgress <= 0)
+        //    {
+        //        FishingMinigameLose?.Invoke();
+        //        MiniGameEnd();
+        //    }
+        //}
 
         catchProgress = Mathf.Clamp(catchProgress, 0, 1);
         progressBar.fillAmount = catchProgress;
@@ -135,27 +147,30 @@ public class FishingMinigame : MonoBehaviour
             case ActionType.Grab:
                 if (grabValue < -4.5f)
                 {
-                    hookPullVelocity += hookSpeed * Time.deltaTime;
+                    grabTime += Time.deltaTime;
+                }
+                else
+                {
+                    if(grabTime > 0)
+                    {
+                        grabTime -= Time.fixedTime * 1.5f;
+                    }
                 }
 
-                hookPullVelocity -= hookGravity * Time.deltaTime;
-                hookPosition += hookPullVelocity;
+                hookPosition = grabTime / grabLimit;
                 break;
             case ActionType.Shake:
 
-                hookPullVelocity -= hookGravity * Time.deltaTime;
-                hookPosition = (hookPullVelocity + shakeCount) / shakeMax;
+                if(shakeCount > shakeReduce)
+                {
+                    shakeReduce += Time.deltaTime * shakeDecay;
+                }
+
+                hookPosition = (shakeCount - shakeReduce) / shakeMax;
                 break;
         }
 
-        if (hookSlider.value <= 0 && hookPullVelocity < 0)
-        {
-            hookPullVelocity = 0;
-        }
-        if (hookSlider.value >= 1 && hookPullVelocity > 0)
-        {
-            hookPullVelocity = 0;
-        }
+        minigameElement.text = $"{shakeCount} - {shakeReduce}";
         hookSlider.value = hookPosition;
     }
 
@@ -167,5 +182,6 @@ public class FishingMinigame : MonoBehaviour
     public void GetShakeCount(int count)
     {
         shakeCount = (float)count;
+        Debug.Log("=======================================================================================================" + count + "============================================================================");
     }
 }

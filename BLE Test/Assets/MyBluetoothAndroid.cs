@@ -34,7 +34,7 @@ public class MyBluetoothAndroid : MyAndroidWrapper.IPlatformAdapter
 
         public void onLog(string str)
         {
-            Debug.Log("~~~!!ON LOG!!~~~ : " + str);
+            //Debug.Log("~~~!!ON LOG!!~~~ : " + str);
             ins.OnLog(str);
         }
 
