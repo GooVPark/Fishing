@@ -8,6 +8,9 @@ public class FishingFloat : MonoBehaviour
     public delegate void NibbleEvent();
     public NibbleEvent NibbleBegin;
 
+    public delegate void CastEndEvent();
+    public CastEndEvent CastEnd;
+
     public TestLauncher fishingSystem;
     public Transform linePivot;
 
@@ -16,6 +19,10 @@ public class FishingFloat : MonoBehaviour
 
     public TMP_Text distanceUI;
 
+    public bool isFloating;
+    public float speed;
+    
+
     private void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
@@ -23,12 +30,21 @@ public class FishingFloat : MonoBehaviour
 
     private void Update()
     {
-        positions[0] = transform.position;
-        positions[1] = linePivot.position;
+    }
 
-        lineRenderer.SetPositions(positions);
+    public void Flight(Vector3 destination)
+    {
+        StartCoroutine(FlightCo(destination));
+    }
 
-        distanceUI.text = Vector3.Distance(positions[0], Vector3.zero).ToString("0.0");
+    private IEnumerator FlightCo(Vector3 destination)
+    {
+        while (Vector3.Distance(transform.position, destination) != Mathf.Epsilon)
+        {
+            transform.position = Vector3.Lerp(transform.position, destination, Time.deltaTime);
+
+            yield return null;
+        }
     }
 
     //나중에 Bite로 이름 바꿀것
@@ -44,9 +60,8 @@ public class FishingFloat : MonoBehaviour
         if(other.CompareTag("SwimArea"))
         {
             Rigidbody rigid = GetComponent<Rigidbody>();
-            rigid.velocity = Vector3.zero;
-            rigid.useGravity = false;
-            rigid.isKinematic = true;
+            StopAllCoroutines();
+            CastEnd?.Invoke();
         }
     }
 }
