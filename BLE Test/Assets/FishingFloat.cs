@@ -18,6 +18,7 @@ public class FishingFloat : MonoBehaviour
     private Vector3[] positions = new Vector3[2];
 
     public TMP_Text distanceUI;
+    public float distance;
 
     public bool isFloating;
     public float speed;
@@ -39,10 +40,12 @@ public class FishingFloat : MonoBehaviour
 
     private IEnumerator FlightCo(Vector3 destination)
     {
+
         while (Vector3.Distance(transform.position, destination) != Mathf.Epsilon)
         {
             transform.position = Vector3.Lerp(transform.position, destination, Time.deltaTime);
-
+            distance = Vector3.Distance(transform.position, destination);
+            distanceUI.text = distance.ToString();
             yield return null;
         }
     }

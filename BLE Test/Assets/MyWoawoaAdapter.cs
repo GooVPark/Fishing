@@ -50,8 +50,8 @@ public class MyWoawoaAdapter : MyAndroidWrapper
     private void Start()
     {
         Init();
-        if (debugTextCanvas.activeInHierarchy)
-            StartCoroutine(DebugTextCo());
+        //if (debugTextCanvas.activeInHierarchy)
+        //    StartCoroutine(DebugTextCo());
         Debug.Log("====================Start MyAndoridAdapterr====================");
         StartScan();
     }
@@ -141,7 +141,7 @@ public class MyWoawoaAdapter : MyAndroidWrapper
         gyy = y;
         gyz = z;
 
-        OnGyroReaded(x, y, z);
+        OnGyroReaded?.Invoke(x, y, z);
     }
 
     public override void OnAcc(double x, double y, double z, string state)
@@ -154,8 +154,8 @@ public class MyWoawoaAdapter : MyAndroidWrapper
         if (OnAccReaded == null)
             return;
 
-        OnAccReaded(x, y, z);
-        OnAccStateReaded(state);
+        OnAccReaded?.Invoke(x, y, z);
+        OnAccStateReaded?.Invoke(state);
     }
 
 
@@ -176,26 +176,26 @@ public class MyWoawoaAdapter : MyAndroidWrapper
     {
         while (true)
         {
-            texts[0].text = gyx.ToString();
-            texts[1].text = gyy.ToString();
-            texts[2].text = gyz.ToString();
+            //texts[0].text = gyx.ToString();
+            //texts[1].text = gyy.ToString();
+            //texts[2].text = gyz.ToString();
 
-            Vector3 gyro = new Vector3((float)gyx, (float)gyz, (float)gyy);
-            if (gyro.magnitude < 0.001f) gyro = Vector3.zero;
-            testObject.Rotate(gyro);
+            ////Vector3 gyro = new Vector3((float)gyx, (float)gyz, (float)gyy);
+            ////if (gyro.magnitude < 0.001f) gyro = Vector3.zero;
+            ////testObject.Rotate(gyro);
 
-            double tempAccX = accx * 100;
-            double tempAccY = accy * 100;
-            double tempAccZ = accz * 100;
-            texts[3].text = tempAccX.ToString("0:0000");
-            texts[4].text = tempAccY.ToString("0:0000");
-            texts[5].text = tempAccZ.ToString("0:0000");
-            texts[6].text = accs;
+            //double tempAccX = accx * 100;
+            //double tempAccY = accy * 100;
+            //double tempAccZ = accz * 100;
+            //texts[3].text = tempAccX.ToString("0:0000");
+            //texts[4].text = tempAccY.ToString("0:0000");
+            //texts[5].text = tempAccZ.ToString("0:0000");
+            //texts[6].text = accs;
 
-            texts[7].text = grab.ToString("0:0000");
+            //texts[7].text = grab.ToString("0:0000");
 
-            texts[8].text = motx.ToString("0:0000");
-            texts[9].text = moty.ToString("0:0000");
+            //texts[8].text = motx.ToString("0:0000");
+            //texts[9].text = moty.ToString("0:0000");
 
             yield return null;
         }

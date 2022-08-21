@@ -30,9 +30,9 @@ public class TestLauncher : MonoBehaviour
     private double gyroY;
     private double gyroZ;
 
-    private double accX;
-    private double accY;
-    private double accZ;
+    private float accX;
+    private float accY;
+    private float accZ;
 
     private string state;
 
@@ -43,6 +43,8 @@ public class TestLauncher : MonoBehaviour
 
     public float[] gyroZs;
     private float lastAngle;
+
+    private float throwAngle;
 
     public Text currentGameStateText;
     public Text gyroSqrMagnitude;
@@ -63,7 +65,6 @@ public class TestLauncher : MonoBehaviour
     private bool isThrow = false;
     private float totalPower = 0f;
 
-    public GaugeController gaugeController;
     public GameObject fishingFloat;
     public Transform floatPivot;
 
@@ -75,8 +76,9 @@ public class TestLauncher : MonoBehaviour
     public float finalLimitTime;
     public float grabTimeLimit;
     public float grabPower;
-
+    private float grabTime = 0f;
     private bool isEndCast;
+    private bool restartTrigger = false;
 
     public GameObject struggling;
     public Image finalStrugglingUI;
@@ -107,6 +109,8 @@ public class TestLauncher : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameManager.OnRestart += OnRestart;
+
         MyWoawoaAdapter.OnAccReaded += GetAccValue;
         MyWoawoaAdapter.OnAccStateReaded += GetAccState;
         MyWoawoaAdapter.OnGyroReaded += GetGyroValue;
@@ -191,7 +195,7 @@ public class TestLauncher : MonoBehaviour
             }
         }
 
-        floatDistanceUI.text = Vector3.Distance(transform.position, fishingFloat.transform.position).ToString("0.0");
+        
 
 
         max = max < (power) ? power : max;
@@ -220,8 +224,16 @@ public class TestLauncher : MonoBehaviour
         totalPower = Mathf.Abs(totalPower);
         totalPower = Mathf.Sqrt(totalPower /= (elapsedTime * elapsedTime));
 
-        fishingFloat.GetComponent<FishingFloat>().Flight(new Vector3(0, -10, totalPower * 0.8f));
+        if(totalPower == float.NaN)
+        {
+            OnReloadEnd();
+            StopCoroutine(StartThrow());
+        }
 
+        throwAngle = Mathf.Atan(accY / Mathf.Sqrt((accX * accX) + (accZ * accZ))) * Mathf.Rad2Deg;
+
+        fishingFloat.GetComponent<FishingFloat>().Flight(Quaternion.Euler(0, throwAngle * (1f / 6f), 0) * new Vector3(0, -10, totalPower * 0.8f));
+        Debug.Log("===========================================" + throwAngle * (1f / 6f)+ "==========================================");
         sumOfPower.text = totalPower.ToString();
         throwTime.text = elapsedTime.ToString();
 
@@ -253,8 +265,7 @@ public class TestLauncher : MonoBehaviour
                 SetAnimation(stickState);
                 break;
             }
-
-            if (randomValue < 10f)
+            else if (randomValue < 10f)
             {
                 stickState = StickState.Nibble;
                 CurrentTutorial = tutorialNibble;
@@ -278,9 +289,6 @@ public class TestLauncher : MonoBehaviour
         {
             SetAnimation(stickState);
             float randomDelay = Random.Range(0.5f, 2f);
-
-            MyWoawoaAdapter.ins.SetVibrationPower(10);
-            MyWoawoaAdapter.ins.StartVibration();
 
             yield return null;
             yield return new WaitForSeconds(randomDelay + playerAnimator.GetCurrentAnimatorStateInfo(0).length);
@@ -317,29 +325,42 @@ public class TestLauncher : MonoBehaviour
 
     public void Final()
     {
+        grabTime = 0;
         struggling.SetActive(true);
         CurrentTutorial = tutorialStruggle;
-        StartCoroutine(FinalCoroutine());
+
+        finalStruggleTimerUI.fillAmount = 0f;
+        finalStrugglingUI.fillAmount = 0f;
+
+        if(finalCoroutine != null)
+        {
+            StopCoroutine(finalCoroutine);
+        }
+        finalCoroutine = StartCoroutine(FinalCoroutine());
     }
 
+    Coroutine finalCoroutine;
     private IEnumerator FinalCoroutine()
     {
         stickState = StickState.Final;
         SetAnimation(stickState);
 
         float elapsedTime = 0f;
-        float grabTime = 0f;
 
         while(elapsedTime < finalLimitTime)
         {
             if(grabPower < -4.5)
             {
                 grabTime += Time.deltaTime;
-
-                finalStrugglingUI.fillAmount = grabTime / grabTimeLimit;
             }
 
-            if(grabTime > grabTimeLimit)
+            Debug.Log("============================" + grabTime + "=============================");
+            Debug.Log("============================" + grabTimeLimit + "=============================");
+            Debug.Log("============================" + finalStrugglingUI.fillAmount + "=============================");
+
+            finalStrugglingUI.fillAmount = grabTime / grabTimeLimit;
+
+            if (grabTime > grabTimeLimit)
             {
                 Catch();
                 struggling.SetActive(false);
@@ -350,14 +371,20 @@ public class TestLauncher : MonoBehaviour
             yield return null;
         }
 
+        while(restartTrigger == false)
+        {
+            yield return null;
+        }
+        restartTrigger = !restartTrigger;
+
         OnReloadEnd();
     }
 
     public void GetAccValue(double x, double y, double z)
     {
-        accX = x;
-        accY = y;
-        accZ = z;
+        accX = (float)x;
+        accY = (float)y;
+        accZ = (float)z;
     }
 
     public void GetAccState(string state)
@@ -379,12 +406,10 @@ public class TestLauncher : MonoBehaviour
     public void GetWalkCount(int count)
     {
         shakeCount = count;
-        gaugeController.GetShakeValue(count);
     }
 
     public void GetGrab(float power)
     {
-        gaugeController.GetGrabValue(power);
         grabPower = power;
     }
 
@@ -425,7 +450,8 @@ public class TestLauncher : MonoBehaviour
     public void Catch()
     {
         MyWoawoaAdapter.ins.StartGyro3DMode();
-        finalStrugglingUI.gameObject.SetActive(false);
+        GameManager.Catch?.Invoke();
+        //finalStrugglingUI.gameObject.SetActive(false);
         stickState = StickState.Catch;
         SetAnimation(stickState);
     }
@@ -433,8 +459,14 @@ public class TestLauncher : MonoBehaviour
     public void Miss()
     {
         MyWoawoaAdapter.ins.StartGyro3DMode();
-        finalStrugglingUI.gameObject.SetActive(false);
+        GameManager.Miss?.Invoke();
+        //finalStrugglingUI.gameObject.SetActive(false);
         stickState = StickState.Reload;
         SetAnimation(stickState);       
+    }
+
+    public void OnRestart()
+    {
+        restartTrigger = !restartTrigger;
     }
 }

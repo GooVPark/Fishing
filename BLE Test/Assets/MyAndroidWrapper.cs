@@ -409,7 +409,7 @@ public class MyAndroidWrapper : MonoBehaviour
     {
         if (OnGrabReaded != null)
         {
-            OnGrabReaded.Invoke(power);
+            OnGrabReaded?.Invoke(power);
         }
     }
 
@@ -417,7 +417,7 @@ public class MyAndroidWrapper : MonoBehaviour
     {
         if (OnMotionReaded != null)
         {
-            OnMotionReaded.Invoke(dx, dy);
+            OnMotionReaded?.Invoke(dx, dy);
         }
     }
 
@@ -425,7 +425,7 @@ public class MyAndroidWrapper : MonoBehaviour
     {
         if (OnWalkReaded != null)
         {
-            OnWalkReaded.Invoke(count);
+            OnWalkReaded?.Invoke(count);
         }
     }
 
