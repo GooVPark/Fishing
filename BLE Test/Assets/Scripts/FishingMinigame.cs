@@ -70,6 +70,7 @@ public class FishingMinigame : MonoBehaviour
     public TMP_Text distanceText;
 
     public FishingFloat floating;
+    private Vector3 floatingStartPosition;
 
     private void Awake()
     {
@@ -95,6 +96,8 @@ public class FishingMinigame : MonoBehaviour
         shakeReduce = shakeCount;
         distance = floating.distance;
 
+        floatingStartPosition = floating.transform.position;
+
         MyWoawoaAdapter.OnGrabReaded += GetGrabValue;
         MyWoawoaAdapter.OnWalkReaded += GetShakeCount;
 
@@ -115,7 +118,9 @@ public class FishingMinigame : MonoBehaviour
         if (fishSlider.value > hookSlider.value - hookSize / 2f && fishSlider.value < hookSlider.value + hookSize / 2f)
         {
             catchProgress += hookPower * Time.deltaTime;
-            distanceText.text = ((distance - (distance * catchProgress)) / 0.7f).ToString();
+            float closingDistance = ((distance - (distance * catchProgress)) / 0.7f);
+            distanceText.text = closingDistance.ToString("0.0");
+            floating.transform.position = Vector3.Lerp(transform.position, floatingStartPosition, closingDistance / floating.distance);
             if(catchProgress >= 1)
             {
                 FishingMinigameWin?.Invoke();

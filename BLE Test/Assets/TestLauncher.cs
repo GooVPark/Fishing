@@ -22,6 +22,7 @@ public class TestLauncher : MonoBehaviour
         Fighting,
         Final
     }
+    [SerializeField] private Transform player;
 
     private bool isCatch = false;
 
@@ -231,8 +232,8 @@ public class TestLauncher : MonoBehaviour
         }
 
         throwAngle = Mathf.Atan(accY / Mathf.Sqrt((accX * accX) + (accZ * accZ))) * Mathf.Rad2Deg;
-
-        fishingFloat.GetComponent<FishingFloat>().Flight(Quaternion.Euler(0, throwAngle * (1f / 6f), 0) * new Vector3(0, -10, totalPower * 0.8f));
+        Vector3 velocity = player.rotation * new Vector3(0, -10, totalPower * 0.8f);
+        fishingFloat.GetComponent<FishingFloat>().Flight(Quaternion.Euler(0, throwAngle * (1f / 6f), 0) * velocity);
         Debug.Log("===========================================" + throwAngle * (1f / 6f)+ "==========================================");
         sumOfPower.text = totalPower.ToString();
         throwTime.text = elapsedTime.ToString();

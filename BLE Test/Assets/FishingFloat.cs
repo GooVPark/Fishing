@@ -44,8 +44,8 @@ public class FishingFloat : MonoBehaviour
         while (Vector3.Distance(transform.position, destination) != Mathf.Epsilon)
         {
             transform.position = Vector3.Lerp(transform.position, destination, Time.deltaTime);
-            distance = Vector3.Distance(transform.position, destination);
-            distanceUI.text = distance.ToString();
+            distance = Vector3.Distance(transform.position, destination) + 1f;
+            distanceUI.text = distance.ToString("0.0");
             yield return null;
         }
     }
