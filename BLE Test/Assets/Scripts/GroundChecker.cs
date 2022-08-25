@@ -24,8 +24,6 @@ public class GroundChecker : MonoBehaviour
             isWater = true;
         }
 
-        Debug.DrawRay(transform.position, Vector3.down * 10f);
-        Debug.Log(isWater);
         warnningUI.SetActive(!isWater);
     }
 
