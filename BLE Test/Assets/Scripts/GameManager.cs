@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
     public GameObject catchUI;
     public GameObject missUI;
 
+    public GameObject locomotion;
     
 
     // Start is called before the first frame update

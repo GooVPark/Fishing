@@ -11,6 +11,7 @@ public class GameStateReady : GameState
     public override void OnStateEnter()
     {
         base.OnStateEnter();
+        gameManager.locomotion.SetActive(true);
         SetAnimation(AnimationState.Ready);   
     }
     
@@ -18,7 +19,7 @@ public class GameStateReady : GameState
     {
         Vector3 gyroValue = InputManager.GyroValue;
 
-        if(gyroValue.z < -60)
+        if(gyroValue.z < -60 && GroundChecker.IsWater)
         {
             gameManager.GameState = gameStateCast;
         }

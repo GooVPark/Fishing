@@ -49,6 +49,7 @@ public abstract class GameState : MonoBehaviour
         Debug.Log("============================= End: " + gameObject.name + " ===================================");
         tutorial?.SetActive(false);
         gameObject.SetActive(false);
+        gameManager.locomotion.SetActive(false);
     }
     public virtual void OnStateUpdate() { }
 }
