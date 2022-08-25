@@ -85,7 +85,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Final
+  m_Name: Struggle
   m_Speed: 2
   m_CycleOffset: 0
   m_Transitions: []
@@ -149,7 +149,7 @@ AnimatorStateMachine:
     m_Position: {x: 300, y: 260, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1882626575196782144}
-    m_Position: {x: 520, y: 210, z: 0}
+    m_Position: {x: 610, y: 210, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8033766262744383093}
     m_Position: {x: 300, y: 310, z: 0}
@@ -232,7 +232,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Fighting
+  m_Name: Fight
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
