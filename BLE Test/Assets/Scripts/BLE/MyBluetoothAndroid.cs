@@ -45,11 +45,13 @@ public class MyBluetoothAndroid : MyAndroidWrapper.IPlatformAdapter
         public void onConnectFailed()
         {
             ins.OnConnectFailed();
+            ins.StartScan();
         }
 
         public void onDisconnected()
         {
             ins.OnDisconnected();
+            ins.StartScan();
         }
 
         public void dataProcess(string str)

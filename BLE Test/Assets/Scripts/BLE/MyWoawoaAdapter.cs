@@ -78,15 +78,6 @@ public class MyWoawoaAdapter : MyAndroidWrapper
         StartGyro();
     }
 
-    public void SetVibrationPower(int value)
-    {
-        SendData($"VS{value}");
-    }
-
-    public void StartVibration()
-    {
-        SendData("VZ");
-    }
 
     public void ResetMotionAccumulated()
     {

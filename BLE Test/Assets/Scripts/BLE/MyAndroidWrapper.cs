@@ -276,7 +276,26 @@ public class MyAndroidWrapper : MonoBehaviour
         SendData("SS");
     }
 
-    
+
+    public void SetVibrationPower(int value)
+    {
+        SendData($"VS{value}");
+    }
+
+    public void SetVibrationStartTime(float time)
+    {
+        SendData($"VO{time}");
+    }
+
+    public void SetVibrationEndTime(float time)
+    {
+        SendData("VI" + time);
+    }
+
+    public void StartVibration()
+    {
+        SendData("VZ");
+    }
 
     public void StartGyro()
     {
@@ -346,6 +365,7 @@ public class MyAndroidWrapper : MonoBehaviour
         // StopAllCoroutines();
         //StartCoroutine(WaitAndSetting());
         //Debug.Log("Coroutine Started!!");
+        StartVibration();
     }
 
     IEnumerator WaitAndSetting()
