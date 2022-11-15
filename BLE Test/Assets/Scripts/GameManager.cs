@@ -71,4 +71,9 @@ public class GameManager : MonoBehaviour
     {
         missUI.SetActive(true);
     }
+
+    public void SetAnimationCasting()
+    {
+
+    }
 }
