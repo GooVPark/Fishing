@@ -74,6 +74,8 @@ public class FishingMinigame : MonoBehaviour
     public FishingFloat floating;
     private Vector3 floatingStartPosition;
 
+    public float shakeFactor = 0;
+
     private void Awake()
     {
         
@@ -129,15 +131,15 @@ public class FishingMinigame : MonoBehaviour
                 MiniGameEnd();
             }
         }
-        //else
-        //{
-        //    catchProgress -= progressBarDecay * Time.deltaTime;
-        //    if (catchProgress <= 0)
-        //    {
-        //        FishingMinigameLose?.Invoke();
-        //        MiniGameEnd();
-        //    }
-        //}
+        else
+        {
+            catchProgress -= progressBarDecay * Time.deltaTime;
+            if (catchProgress <= 0)
+            {
+                FishingMinigameLose?.Invoke();
+                MiniGameEnd();
+            }
+        }
 
         catchProgress = Mathf.Clamp(catchProgress, 0, 1);
         progressBar.fillAmount = catchProgress;
@@ -206,8 +208,9 @@ public class FishingMinigame : MonoBehaviour
             countFactor -= 4;
         }
 
-        shakeCount = (float)(count + countFactor);
+        Debug.Log($"CurrentCount: {count}\nPrevCount: {prevCount}\nCountFActor: {countFactor}");
+        shakeCount = (float)(count + countFactor) * 2 * (1 + shakeFactor/100f);
         Debug.Log("=======================================================================================================" + shakeCount + "============================================================================");
-        prevCount = currentCount + countFactor;
+        prevCount = currentCount;
     }
 }
