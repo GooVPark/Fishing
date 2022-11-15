@@ -22,14 +22,14 @@ public class GameStateWait : GameState
             }
 
             string accState = InputManager.AccState;
-            if(accState == "1" || accState == "2")
+            if(InputManager.AccValue.magnitude > 100)
             {
                 gameManager.GameState = gameStateReload;
                 break;
             }
 
             Debug.Log("=============== Waiting ==============");
-            float waitingTime = Random.Range(0.1f, 3.0f);
+            float waitingTime = Random.Range(1.0f, 5.0f);
             yield return new WaitForSeconds(waitingTime);
         }
     }

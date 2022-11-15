@@ -19,6 +19,8 @@ public abstract class GameState : MonoBehaviour
 {
     public GameManager gameManager;
 
+    protected MyBluetoothAndroid android;
+
     public Transform playerTransform;
     public Animator playerAnimator;
     public Animator fishingRodAnimator;
@@ -28,6 +30,7 @@ public abstract class GameState : MonoBehaviour
     private void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
+        android = FindObjectOfType<MyBluetoothAndroid>();
     }
 
     public void SetAnimation(AnimationState state)

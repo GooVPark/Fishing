@@ -19,9 +19,9 @@ public class GameStateNibble : GameState
             Debug.Log("========================= Current Nibble Count: " + i + "=========================");
             SetAnimation(AnimationState.Nibble);
 
-            MyWoawoaAdapter.ins.StartVibration();
+            android.StartVibration();
 
-            float randomDelay = Random.Range(0.5f, 2f);
+            float randomDelay = Random.Range(1f, 4f);
 
             yield return null;
             yield return new WaitForSeconds(randomDelay + playerAnimator.GetCurrentAnimatorStateInfo(0).length);

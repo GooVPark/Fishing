@@ -56,6 +56,8 @@ public class FishingMinigame : MonoBehaviour
 
     private float grabValue;
     private float shakeCount;
+    private int prevCount = 0;
+    private int countFactor = 0;
 
     [SerializeField] private float grabTime;
     [SerializeField] private float grabLimit;
@@ -94,7 +96,7 @@ public class FishingMinigame : MonoBehaviour
         grabTime = 0;
 
         shakeReduce = shakeCount;
-        distance = floating.distance;
+        distance = 100f;
 
         floatingStartPosition = floating.transform.position;
 
@@ -120,7 +122,7 @@ public class FishingMinigame : MonoBehaviour
             catchProgress += hookPower * Time.deltaTime;
             float closingDistance = ((distance - (distance * catchProgress)) / 0.7f);
             distanceText.text = closingDistance.ToString("0.0");
-            floating.transform.position = Vector3.Lerp(transform.position, floatingStartPosition, closingDistance / floating.distance);
+            //floating.transform.position = Vector3.Lerp(transform.position, floatingStartPosition, closingDistance / floating.distance);
             if(catchProgress >= 1)
             {
                 FishingMinigameWin?.Invoke();
@@ -155,7 +157,6 @@ public class FishingMinigame : MonoBehaviour
         fishSlider.value = fishPosition;
     }
 
-    float prevCount = 0;
 
     private void MoveHook()
     {
@@ -198,7 +199,15 @@ public class FishingMinigame : MonoBehaviour
 
     public void GetShakeCount(int count)
     {
-        shakeCount = (float)count;
-        Debug.Log("=======================================================================================================" + count + "============================================================================");
+        int currentCount = count;
+
+        if(currentCount - prevCount == 4)
+        {
+            countFactor -= 4;
+        }
+
+        shakeCount = (float)(count + countFactor);
+        Debug.Log("=======================================================================================================" + shakeCount + "============================================================================");
+        prevCount = currentCount + countFactor;
     }
 }

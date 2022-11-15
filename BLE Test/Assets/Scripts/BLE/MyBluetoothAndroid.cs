@@ -45,13 +45,11 @@ public class MyBluetoothAndroid : MyAndroidWrapper.IPlatformAdapter
         public void onConnectFailed()
         {
             ins.OnConnectFailed();
-            ins.StartScan();
         }
 
         public void onDisconnected()
         {
             ins.OnDisconnected();
-            ins.StartScan();
         }
 
         public void dataProcess(string str)
@@ -203,12 +201,20 @@ else if (code.Equals(K_DISCONNECTED))
     {
         isConnected = false;
         myAndroidWrapper.OnConnectFailed();
+
+        Debug.Log("=======Try Reconnect=======");
+
+        ins.StartScan();
     }
 
     public override void OnDisconnected()
     {
         isConnected = false;
         myAndroidWrapper.OnDisconnected();
+
+        Debug.Log("=======Try Reconnect=======");
+
+        ins.StartScan();
     }
 
     public override bool IsBluetoothEnabled()
@@ -219,5 +225,26 @@ else if (code.Equals(K_DISCONNECTED))
     public void OnLog(string str)
     {
         myAndroidWrapper.AddLog(str);
+    }
+
+
+    public void SetVibrationPower(int value)
+    {
+        SendData($"VS{value}");
+    }
+
+    public void SetVibrationStartTime(float time)
+    {
+        SendData($"VO{time}");
+    }
+
+    public void SetVibrationEndTime(float time)
+    {
+        SendData("VI" + time);
+    }
+
+    public void StartVibration()
+    {
+        SendData("VZ");
     }
 }

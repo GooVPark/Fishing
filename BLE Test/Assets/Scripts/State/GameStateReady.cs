@@ -19,7 +19,7 @@ public class GameStateReady : GameState
     {
         Vector3 gyroValue = InputManager.GyroValue;
 
-        if(gyroValue.z < -60 && GroundChecker.IsWater)
+        if(gyroValue.magnitude > 180f && GroundChecker.IsWater)
         {
             gameManager.GameState = gameStateCast;
         }
