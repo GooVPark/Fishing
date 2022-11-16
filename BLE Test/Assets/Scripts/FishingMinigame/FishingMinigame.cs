@@ -181,12 +181,19 @@ public class FishingMinigame : MonoBehaviour
                 break;
             case ActionType.Shake:
 
+                float grabFactor = 0;
+
+                if (grabValue < -4.5f)
+                {
+                    grabFactor = -1f;
+                }
+
                 if(shakeCount > shakeReduce)
                 {
                     shakeReduce += Time.deltaTime * shakeDecay;
                 }
 
-                hookPosition = (shakeCount - shakeReduce) / shakeMax;
+                hookPosition = (shakeCount - shakeReduce + grabFactor) / shakeMax;
                 break;
         }
 
@@ -201,16 +208,16 @@ public class FishingMinigame : MonoBehaviour
 
     public void GetShakeCount(int count)
     {
-        int currentCount = count;
+        //int currentCount = count;
 
-        if(currentCount - prevCount == 4)
-        {
-            countFactor -= 4;
-        }
+        //if(currentCount - prevCount == 4)
+        //{
+        //    countFactor -= 4;
+        //}
 
-        Debug.Log($"CurrentCount: {count}\nPrevCount: {prevCount}\nCountFActor: {countFactor}");
-        shakeCount = (float)(count + countFactor) * 2 * (1 + shakeFactor/100f);
+        //Debug.Log($"CurrentCount: {count}\nPrevCount: {prevCount}\nCountFActor: {countFactor}");
+        shakeCount = (float)(count + countFactor);// * 2 * (1 + shakeFactor/100f);
         Debug.Log("=======================================================================================================" + shakeCount + "============================================================================");
-        prevCount = currentCount;
+        //prevCount = currentCount;
     }
 }
