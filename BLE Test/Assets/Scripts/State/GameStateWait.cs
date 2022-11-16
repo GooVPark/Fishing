@@ -22,7 +22,7 @@ public class GameStateWait : GameState
             }
 
             string accState = InputManager.AccState;
-            if(InputManager.AccValue.magnitude > 100)
+            if(InputManager.GyroValue.magnitude > 100)
             {
                 gameManager.GameState = gameStateReload;
                 break;

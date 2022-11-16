@@ -27,11 +27,17 @@ public class GameStateStruggle : GameState
 
         while (elapsedTime < limitTime)
         {
-            if(InputManager.GrabPower < -4.5f)
+            if (InputManager.GrabPower < -4.5f)
             {
                 grabTime += Time.deltaTime;
             }
-
+            else
+            {
+                if (grabTime >= 0)
+                {
+                    grabTime -= Time.deltaTime;
+                }
+            }
             struggleGauge.fillAmount = grabTime / grabTimeThrashold;
 
             if(grabTime > grabTimeThrashold)

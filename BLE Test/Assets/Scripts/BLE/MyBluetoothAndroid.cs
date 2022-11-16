@@ -204,7 +204,7 @@ else if (code.Equals(K_DISCONNECTED))
 
         Debug.Log("=======Try Reconnect=======");
 
-        ins.StartScan();
+        GetJavaObject().Call("mooziScan");
     }
 
     public override void OnDisconnected()
@@ -214,7 +214,7 @@ else if (code.Equals(K_DISCONNECTED))
 
         Debug.Log("=======Try Reconnect=======");
 
-        ins.StartScan();
+        GetJavaObject().Call("mooziScan");
     }
 
     public override bool IsBluetoothEnabled()

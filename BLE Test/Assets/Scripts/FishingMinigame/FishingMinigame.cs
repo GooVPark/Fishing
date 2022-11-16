@@ -102,6 +102,10 @@ public class FishingMinigame : MonoBehaviour
 
         floatingStartPosition = floating.transform.position;
 
+        fishTimeRandomizer = Random.Range(1f, 5f);
+        progressBarDecay = Random.Range(0.03f, 0.07f);
+        
+
         MyWoawoaAdapter.OnGrabReaded += GetGrabValue;
         MyWoawoaAdapter.OnWalkReaded += GetShakeCount;
 
@@ -181,21 +185,21 @@ public class FishingMinigame : MonoBehaviour
                 break;
             case ActionType.Shake:
 
-                if (grabValue < -4.5f)
-                {
-                    shakeReduce += Time.deltaTime * shakeDecay;
-                }
-
                 if(shakeCount > shakeReduce)
                 {
-                    shakeReduce += Time.deltaTime * shakeDecay;
+                    shakeReduce += Time.deltaTime * shakeDecay * 0.9f;
+
+                    if (grabValue < -4.5f)
+                    {
+                        shakeReduce += Time.deltaTime * shakeDecay;
+                    }
                 }
 
                 hookPosition = (shakeCount - shakeReduce) / shakeMax;
                 break;
         }
 
-        minigameElement.text = $"{shakeCount} - {shakeReduce}";
+        //minigameElement.text = $"{shakeCount} - {shakeReduce}";
         hookSlider.value = hookPosition;
     }
 
