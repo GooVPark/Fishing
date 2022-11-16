@@ -34,6 +34,7 @@ struct WaterVertexOutput // fragment struct
 	float4	clipPos					: SV_POSITION;
 	UNITY_VERTEX_INPUT_INSTANCE_ID
 	UNITY_VERTEX_OUTPUT_STEREO
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,7 +69,7 @@ float2 AdjustedDepth(half2 uvs, half4 additionalData)
 {
 	float rawD = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_ScreenTextures_linear_clamp, uvs);
 	float d = LinearEyeDepth(rawD, _ZBufferParams);
-	return float2(d * additionalData.x - additionalData.y, (rawD * -_ProjectionParams.x) + (1-UNITY_REVERSED_Z));
+	return float2(d * additionalData.x - additionalData.y, (rawD * -_ProjectionParams.x));// + (1-UNITY_REVERSED_Z));
 }
 
 float WaterTextureDepth(float3 posWS)

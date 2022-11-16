@@ -26,9 +26,6 @@ public class MyWoawoaAdapter : MyAndroidWrapper
 
     public Button orgCancelButton;
 
-    public GameObject debugTextCanvas;
-    public Text[] texts;
-
     public bool isGyro3DMode;
 
     private float accMotionX;
