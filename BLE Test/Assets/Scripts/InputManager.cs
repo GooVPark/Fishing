@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class InputManager : MonoBehaviour
 {
@@ -23,6 +24,12 @@ public class InputManager : MonoBehaviour
 
     #endregion
 
+    #region Texts
+
+    public TMP_Text gyroValueText;
+
+    #endregion
+
     private void Start()
     {
         MyWoawoaAdapter.OnAccReaded += GetAcc;
@@ -30,6 +37,11 @@ public class InputManager : MonoBehaviour
         MyWoawoaAdapter.OnGyroReaded += GetGyro;
         MyWoawoaAdapter.OnGrabReaded += GetGrab;
         MyWoawoaAdapter.OnWalkReaded += GetWalkCount;
+    }
+
+    private void Update()
+    {
+        gyroValueText.text = $"GyroValue: {gyroValue}, Magnitutd: {gyroValue.magnitude}";
     }
 
     #region Input Methods

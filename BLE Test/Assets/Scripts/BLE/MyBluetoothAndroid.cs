@@ -228,6 +228,11 @@ else if (code.Equals(K_DISCONNECTED))
     }
 
 
+    public void SetVibrationType(string value)
+    {
+        SendData(value);
+    }
+
     public void SetVibrationPower(int value)
     {
         SendData($"VS{value}");

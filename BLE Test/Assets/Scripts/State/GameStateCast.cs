@@ -60,6 +60,7 @@ public class GameStateCast : GameState
     {
         base.OnStateEnter();
         StartCoroutine(Cast());
+        GameManager.fishingStateEvent(AnimationState.Cast);
         SetAnimation(AnimationState.Cast);
         fishingFloat.CastEnd += StartWait;
     }

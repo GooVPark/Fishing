@@ -52,6 +52,7 @@ public class GameStateStruggle : GameState
     {
         base.OnStateEnter();
         struggleGaugeUI.SetActive(true);
+        GameManager.fishingStateEvent(AnimationState.Struggle);
         SetAnimation(AnimationState.Struggle);
         StartCoroutine(Struggle());
     }

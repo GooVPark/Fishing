@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public delegate void FishingStateEvent(AnimationState state);
+    public static FishingStateEvent fishingStateEvent;
+    
+
     private GameState gameState;
     public GameState GameState
     {

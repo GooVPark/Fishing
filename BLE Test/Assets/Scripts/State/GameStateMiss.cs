@@ -45,6 +45,7 @@ public class GameStateMiss : GameState
     {
         base.OnStateEnter();
         StartCoroutine(Miss());
+        GameManager.fishingStateEvent(AnimationState.Miss);
         SetAnimation(AnimationState.Miss);
         restartUI.SetActive(true);
     }

@@ -50,6 +50,7 @@ public class GameStateCatch : GameState
         fish.gameObject.SetActive(true);
         restartUI.SetActive(true);
         StartCoroutine(Catch());
+        GameManager.fishingStateEvent(AnimationState.Catch);
         SetAnimation(AnimationState.Catch);
     }
 

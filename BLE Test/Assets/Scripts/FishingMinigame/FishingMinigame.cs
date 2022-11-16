@@ -181,11 +181,9 @@ public class FishingMinigame : MonoBehaviour
                 break;
             case ActionType.Shake:
 
-                float grabFactor = 0;
-
                 if (grabValue < -4.5f)
                 {
-                    grabFactor = -1f;
+                    shakeReduce += Time.deltaTime * shakeDecay;
                 }
 
                 if(shakeCount > shakeReduce)
@@ -193,7 +191,7 @@ public class FishingMinigame : MonoBehaviour
                     shakeReduce += Time.deltaTime * shakeDecay;
                 }
 
-                hookPosition = (shakeCount - shakeReduce + grabFactor) / shakeMax;
+                hookPosition = (shakeCount - shakeReduce) / shakeMax;
                 break;
         }
 
@@ -216,8 +214,8 @@ public class FishingMinigame : MonoBehaviour
         //}
 
         //Debug.Log($"CurrentCount: {count}\nPrevCount: {prevCount}\nCountFActor: {countFactor}");
-        shakeCount = (float)(count + countFactor);// * 2 * (1 + shakeFactor/100f);
-        Debug.Log("=======================================================================================================" + shakeCount + "============================================================================");
+        shakeCount = (float)(count + countFactor) * 1.5f * (1 + shakeFactor/100f);
+        Debug.Log("======================================================================================================" + shakeCount + "============================================================================");
         //prevCount = currentCount;
     }
 }

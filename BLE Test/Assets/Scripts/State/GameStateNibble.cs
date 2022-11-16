@@ -33,6 +33,11 @@ public class GameStateNibble : GameState
     public override void OnStateEnter()
     {
         base.OnStateEnter();
+
+        android.SetVibrationPower(30);
+        android.SetVibrationType("VA");
+
+
         StartCoroutine(Nibble());
     }
 

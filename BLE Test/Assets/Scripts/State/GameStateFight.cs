@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameStateFight : GameState
 {
     [Header("Other States")]
-    public GameState gameStateStruggle;
+    public GameStateStruggle gameStateStruggle;
     public GameState gameStateReload;
 
     [Header("Objects")]
@@ -19,6 +19,7 @@ public class GameStateFight : GameState
         FishingMinigame.FishingMinigameLose += Miss;
 
         MyWoawoaAdapter.ins.StartWalk();
+        GameManager.fishingStateEvent(AnimationState.Fight);
         SetAnimation(AnimationState.Fight);
         fishingMinigame.MiniGameStart();
     }

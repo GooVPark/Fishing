@@ -14,6 +14,9 @@ public class GameStateBite : GameState
     private IEnumerator Bite()
     {
         yield return null;
+
+        //android.StartVibration();
+
         yield return new WaitForSeconds(playerAnimator.GetCurrentAnimatorStateInfo(0).length);
 
         gameManager.GameState = gameStateReload;
@@ -22,7 +25,10 @@ public class GameStateBite : GameState
     public override void OnStateEnter()
     {
         base.OnStateEnter();
+        //android.SetVibrationPower(100);
+        //android.SetVibrationType("VA");
         SetAnimation(AnimationState.Bite);
+        GameManager.fishingStateEvent?.Invoke(AnimationState.Bite);
         StartCoroutine(Bite());
     }
 

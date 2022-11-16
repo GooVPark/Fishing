@@ -12,6 +12,7 @@ public class GameStateReady : GameState
     {
         base.OnStateEnter();
         gameManager.locomotion.SetActive(true);
+        GameManager.fishingStateEvent(AnimationState.Ready);
         SetAnimation(AnimationState.Ready);   
     }
     
